@@ -1,5 +1,6 @@
 package moe.tqlwsl.aicemu
 
+import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.*
 import android.nfc.NfcAdapter
@@ -28,11 +29,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
     private lateinit var readCardBroadcastReceiver: ReadCardBroadcastReceiver
-    private lateinit var nfcAdapter: NfcAdapter
-    private lateinit var nfcPendingIntent: PendingIntent
-    private lateinit var nfcFCardEmulation: NfcFCardEmulation
     private lateinit var nfcFComponentName: ComponentName
     private lateinit var jsonFile: File
+    private var nfcAdapter: NfcAdapter? = null
+    private var nfcFCardEmulation: NfcFCardEmulation? = null
+    private var nfcPendingIntent: PendingIntent? = null
     private val gson = Gson()
     private var cards = mutableListOf<Card>()
     private val cardsJsonPath = "card.json"
@@ -54,21 +55,36 @@ class MainActivity : AppCompatActivity() {
             startActivity(readCardIntent)
         }
 
+        // load json file
+        jsonFile = File(filesDir, cardsJsonPath)
+        loadCards()
+
         // read card callback
         readCardBroadcastReceiver = ReadCardBroadcastReceiver()
         val intentFilter = IntentFilter("moe.tqlwsl.aicemu.READ_CARD")
         registerReceiver(readCardBroadcastReceiver, intentFilter)
 
-        // add pendingintent in order not to read tag at home
+        // check nfc
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        if (nfcAdapter == null) {
+            Log.e(TAG, "NFC not supported")
+            AlertDialog.Builder(this)
+                .setTitle("Error").setMessage("NFC not supported").setCancelable(false).show()
+            return
+        }
+        if (!nfcAdapter!!.isEnabled) {
+            Log.e(TAG, "NFC is off")
+            AlertDialog.Builder(this)
+                .setTitle("Error").setMessage("NFC is off").setCancelable(false).show()
+            return
+        }
+
+        // add pendingintent in order not to read tag at home
         val intent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         nfcPendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
-        // load json file
-        jsonFile = File(filesDir, cardsJsonPath)
-        loadCards()
 
         // load hcefservice
         nfcFCardEmulation = NfcFCardEmulation.getInstance(nfcAdapter)
@@ -80,18 +96,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null, null)
+        if (nfcPendingIntent != null) {
+            nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, null, null)
+        }
 //        val orgSys = nfcFCardEmulation?.getSystemCodeForService(nfcFComponentName)
 //        if (orgSys != null) {
 //            setSys(orgSys)
 //        }
-        nfcFCardEmulation.enableService(this, nfcFComponentName)
+        nfcFCardEmulation?.enableService(this, nfcFComponentName)
     }
 
     override fun onPause() {
         super.onPause()
-        nfcAdapter.disableForegroundDispatch(this)
-        nfcFCardEmulation.disableService(this)
+        nfcAdapter?.disableForegroundDispatch(this)
+        nfcFCardEmulation?.disableService(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -182,17 +200,17 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setIDm(idm: String): Boolean {
-        nfcFCardEmulation.disableService(this)
-        val resultIdm = nfcFCardEmulation.setNfcid2ForService(nfcFComponentName, idm)
-        nfcFCardEmulation.enableService(this, nfcFComponentName)
-        return resultIdm
+        nfcFCardEmulation?.disableService(this)
+        val resultIdm = nfcFCardEmulation?.setNfcid2ForService(nfcFComponentName, idm)
+        nfcFCardEmulation?.enableService(this, nfcFComponentName)
+        return resultIdm == true
     }
 
     private fun setSys(sys: String): Boolean {
-        nfcFCardEmulation.disableService(this)
-        val resultSys = nfcFCardEmulation.registerSystemCodeForService(nfcFComponentName, sys)
-        nfcFCardEmulation.enableService(this, nfcFComponentName)
-        return resultSys
+        nfcFCardEmulation?.disableService(this)
+        val resultSys = nfcFCardEmulation?.registerSystemCodeForService(nfcFComponentName, sys)
+        nfcFCardEmulation?.enableService(this, nfcFComponentName)
+        return resultSys == true
     }
 
     private fun emuCard(cardView: View) {
@@ -206,10 +224,10 @@ class MainActivity : AppCompatActivity() {
         val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)
         val cardName = cardNameTextView.text
         if (!resultIdm) {
-            Toast.makeText(applicationContext, "Error IDm", Toast.LENGTH_LONG ).show()
+            Toast.makeText(applicationContext, "Error IDm", Toast.LENGTH_LONG).show()
         }
         if (!resultSys) {
-            Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG ).show()
+            Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG).show()
         }
         if (resultIdm && resultSys) {
             Toast.makeText(applicationContext, "正在模拟$cardName...", Toast.LENGTH_LONG).show()
