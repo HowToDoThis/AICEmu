@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="moe.tqlwsl.aicemu.MainActivity">
+    <item
+        android:id="@+id/toolbar_menu_hide_id"
+        android:title="@string/hide_id" />
+    <item
+        android:id="@+id/toolbar_menu_settings"
+        android:title="@string/settings" />
+</menu>

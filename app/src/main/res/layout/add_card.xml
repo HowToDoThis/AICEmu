@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        app:cardBackgroundColor="?attr/colorSecondary"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp">
+
+        <ImageButton
+            android:id="@+id/pop_up_close_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="top|end"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+        <TextView
+            android:id="@+id/pop_up_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/read_card_tip"
+            android:textColor="@color/design_default_color_on_primary"
+            android:textSize="18sp"
+            android:contentDescription="@string/close_popup" />
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
