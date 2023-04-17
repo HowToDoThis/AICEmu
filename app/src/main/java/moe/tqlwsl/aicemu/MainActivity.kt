@@ -99,10 +99,6 @@ class MainActivity : AppCompatActivity() {
         if (nfcPendingIntent != null) {
             nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, null, null)
         }
-//        val orgSys = nfcFCardEmulation?.getSystemCodeForService(nfcFComponentName)
-//        if (orgSys != null) {
-//            setSys(orgSys)
-//        }
         nfcFCardEmulation?.enableService(this, nfcFComponentName)
     }
 
@@ -177,11 +173,11 @@ class MainActivity : AppCompatActivity() {
                             saveCards()
                         }
                     }
-                    cardView.setOnTouchListener { v, _ ->
-                        editText.clearFocus()
-                        v.performClick()
-                        true
-                    }
+//                    cardView.setOnTouchListener { v, _ ->
+//                        editText.clearFocus()
+//                        v.performClick()
+//                        true
+//                    }
                     true
                 }
                 R.id.card_menu_delete -> {
@@ -249,6 +245,8 @@ class MainActivity : AppCompatActivity() {
             showCardMenu(it, cardView)
         }
         cardView.setOnTouchListener { v, _ ->
+            val editText = v.findViewById<EditText>(R.id.card_name_edit)
+            editText.clearFocus()
             emuCard(v)
             v.performClick()
             true
