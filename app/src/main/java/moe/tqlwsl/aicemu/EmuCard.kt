@@ -9,7 +9,6 @@ import android.widget.Toast
 class EmuCard : HostNfcFService() {
     private lateinit var card: FelicaCard
 
-
     // byte utils
     fun byteArrayOfInts(vararg ints: Int) = ByteArray(ints.size) { pos -> ints[pos].toByte() }
     fun ByteArray.toHexString(hasSpace: Boolean = true) = this.joinToString("") {
@@ -80,7 +79,7 @@ class EmuCard : HostNfcFService() {
         Log.d("HCEFService", "onCreate NFCF")
         super.onCreate()
         val globalVar = this.applicationContext as GlobalVar
-        card = FelicaCard(globalVar.IDm)
+        card = FelicaCard(this, globalVar.IDm)
         // Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show()
     }
 

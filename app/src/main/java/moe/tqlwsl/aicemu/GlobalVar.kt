@@ -3,5 +3,5 @@ package moe.tqlwsl.aicemu
 import android.app.Application
 
 class GlobalVar : Application() {
-    var IDm: String = ""
+    var IDm: String = "02fe000000000000"
 }
