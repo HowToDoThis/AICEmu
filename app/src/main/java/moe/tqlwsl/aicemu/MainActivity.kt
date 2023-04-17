@@ -12,48 +12,43 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.view.WindowCompat
-import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import moe.tqlwsl.aicemu.databinding.ActivityMainBinding
-import java.io.File
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.io.IOException
+import moe.tqlwsl.aicemu.databinding.ActivityMainBinding
+
 
 
 internal data class Card(val name: String, val idm: String)
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
-    private var readCardBroadcastReceiver: ReadCardBroadcastReceiver? = null
+    private lateinit var readCardBroadcastReceiver: ReadCardBroadcastReceiver
     private lateinit var nfcAdapter: NfcAdapter
-    private lateinit var pendingIntent: PendingIntent
+    private lateinit var nfcPendingIntent: PendingIntent
+    private lateinit var nfcFCardEmulation: NfcFCardEmulation
+    private lateinit var nfcFComponentName: ComponentName
+    private lateinit var jsonFile: File
     private val gson = Gson()
     private var cards = mutableListOf<Card>()
-    private val jsonPath = "card.json"
-    private lateinit var jsonFile: File
+    private val cardsJsonPath = "card.json"
     private var showCardID: Boolean = false
-    private var nfcFCardEmulation: NfcFCardEmulation? = null
-    private var myComponentName: ComponentName? = null
-
     private val TAG = "AICEmu"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+
+        // ui
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // toolbar
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        // fab
         findViewById<FloatingActionButton>(R.id.fab_add_card).setOnClickListener {
             val readCardIntent = Intent(this, ReadCard::class.java)
             startActivity(readCardIntent)
@@ -64,20 +59,20 @@ class MainActivity : AppCompatActivity() {
         val intentFilter = IntentFilter("moe.tqlwsl.aicemu.READ_CARD")
         registerReceiver(readCardBroadcastReceiver, intentFilter)
 
-        //  add intent in order not to read tag twice time
+        // add pendingintent in order not to read tag at home
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         val intent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        nfcPendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         // load json file
-        jsonFile = File(filesDir, jsonPath)
+        jsonFile = File(filesDir, cardsJsonPath)
         loadCards()
 
-        //
+        // load hcefservice
         nfcFCardEmulation = NfcFCardEmulation.getInstance(nfcAdapter)
-        myComponentName = ComponentName(
+        nfcFComponentName = ComponentName(
             "moe.tqlwsl.aicemu",
             "moe.tqlwsl.aicemu.EmuCard"
         )
@@ -85,18 +80,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null)
-        val orgSys = nfcFCardEmulation?.getSystemCodeForService(myComponentName)
-        if (orgSys != null) {
-            setSys(orgSys)
-        }
-        nfcFCardEmulation?.enableService(this, myComponentName)
+        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null, null)
+//        val orgSys = nfcFCardEmulation?.getSystemCodeForService(nfcFComponentName)
+//        if (orgSys != null) {
+//            setSys(orgSys)
+//        }
+        nfcFCardEmulation.enableService(this, nfcFComponentName)
     }
 
     override fun onPause() {
         super.onPause()
         nfcAdapter.disableForegroundDispatch(this)
-        nfcFCardEmulation?.disableService(this)
+        nfcFCardEmulation.disableService(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -116,28 +111,20 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.toolbar_menu_hide_id -> {
-                val mainLayout: ViewGroup = findViewById(R.id.mainList)
-                if (showCardID) {
-                    showCardID = false
-                    for (i in 0 until mainLayout.childCount) {
-                        val child = mainLayout.getChildAt(i)
-                        if (child is CardView) {
-                            val idView = child.findViewById<TextView>(R.id.card_id)
-                            val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
-                            idView.visibility = View.GONE
-                            idShadowView.visibility = View.VISIBLE
-                        }
-                   }
-                }
-                else {
-                    showCardID = true
-                    for (i in 0 until mainLayout.childCount) {
-                        val child = mainLayout.getChildAt(i)
-                        if (child is CardView) {
-                            val idView = child.findViewById<TextView>(R.id.card_id)
-                            val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
+                val cardsLayout: ViewGroup = findViewById(R.id.mainList)
+                showCardID = !showCardID
+                for (i in 0 until cardsLayout.childCount) {
+                    val child = cardsLayout.getChildAt(i)
+                    if (child is CardView) {
+                        val idView = child.findViewById<TextView>(R.id.card_id)
+                        val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
+                        if (showCardID) {
                             idView.visibility = View.VISIBLE
                             idShadowView.visibility = View.GONE
+                        }
+                        else {
+                            idView.visibility = View.GONE
+                            idShadowView.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -145,71 +132,14 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.toolbar_menu_settings -> {
                 Toast.makeText(applicationContext, "还没做（）\nUnder constuction...", Toast.LENGTH_LONG).show()
+                // TODO
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-
-    private fun setIDm(idm: String): Boolean {
-        nfcFCardEmulation?.disableService(this)
-        val resultIdm = nfcFCardEmulation?.setNfcid2ForService(myComponentName, idm)
-        nfcFCardEmulation?.enableService(this, myComponentName)
-        return resultIdm == true
-    }
-
-    private fun setSys(sys: String): Boolean {
-        nfcFCardEmulation?.disableService(this)
-        val resultSys = nfcFCardEmulation?.registerSystemCodeForService(myComponentName, sys)
-        nfcFCardEmulation?.enableService(this, myComponentName)
-        return resultSys == true
-    }
-
-
-
-
-    private fun addCard(name: String, IDm: String?) {
-        val mainLayout: ViewGroup = findViewById(R.id.mainList)
-        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val cardView = inflater.inflate(R.layout.card, mainLayout, false)
-        mainLayout.addView(cardView)
-        val nameTextView = cardView.findViewById<TextView>(R.id.card_name)
-        nameTextView.text = name
-        val IDmTextView = cardView.findViewById<TextView>(R.id.card_id)
-        IDmTextView.text = IDm
-        val menuButton: ImageButton = cardView.findViewById(R.id.card_menu_button)
-        menuButton.setOnClickListener {
-            showPopupMenu(it, cardView)
-        }
-        cardView.setOnTouchListener { v, _ ->
-
-            val globalVar = this.applicationContext as GlobalVar
-            val IDmTextView = v.findViewById<TextView>(R.id.card_id)
-            globalVar.IDm = IDmTextView.text.toString()
-
-            //setIDm(IDm)
-            val resultIdm = setIDm("02fe000000000000")
-            val resultSys = setSys("88B4")
-
-
-            val nameTextView = v.findViewById<TextView>(R.id.card_name)
-            nameTextView.text = name
-            if (!resultIdm) {
-                Toast.makeText(applicationContext, "Error IDm", Toast.LENGTH_LONG ).show()
-            }
-            if (!resultSys) {
-                Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG ).show()
-            }
-            if (resultIdm && resultSys) {
-                Toast.makeText(applicationContext, "正在模拟$name...", Toast.LENGTH_LONG).show()
-            }
-            v.performClick()
-            true
-        }
-    }
-
-    private fun showPopupMenu(v: View, cardView: View) {
+    private fun showCardMenu(v: View, cardView: View) {
         val popupMenu = PopupMenu(this, v)
         popupMenu.inflate(R.menu.card_menu) // 加载菜单资源文件
         popupMenu.setOnMenuItemClickListener { item: MenuItem ->
@@ -249,6 +179,64 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+
+    private fun setIDm(idm: String): Boolean {
+        nfcFCardEmulation.disableService(this)
+        val resultIdm = nfcFCardEmulation.setNfcid2ForService(nfcFComponentName, idm)
+        nfcFCardEmulation.enableService(this, nfcFComponentName)
+        return resultIdm
+    }
+
+    private fun setSys(sys: String): Boolean {
+        nfcFCardEmulation.disableService(this)
+        val resultSys = nfcFCardEmulation.registerSystemCodeForService(nfcFComponentName, sys)
+        nfcFCardEmulation.enableService(this, nfcFComponentName)
+        return resultSys
+    }
+
+    private fun emuCard(cardView: View) {
+        val globalVar = this.applicationContext as GlobalVar
+        val cardIDmTextView = cardView.findViewById<TextView>(R.id.card_id)
+        globalVar.IDm = cardIDmTextView.text.toString()
+        //val resultIdm = setIDm(IDm)
+        val resultIdm = setIDm("02fe000000000000") // hardcoded idm for sbga
+        val resultSys = setSys("88B4") // hardcoded syscode for sbga
+
+        val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)
+        val cardName = cardNameTextView.text
+        if (!resultIdm) {
+            Toast.makeText(applicationContext, "Error IDm", Toast.LENGTH_LONG ).show()
+        }
+        if (!resultSys) {
+            Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG ).show()
+        }
+        if (resultIdm && resultSys) {
+            Toast.makeText(applicationContext, "正在模拟$cardName...", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+    private fun addCard(name: String, IDm: String?) {
+        val cardsLayout: ViewGroup = findViewById(R.id.mainList)
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val cardView = inflater.inflate(R.layout.card, cardsLayout, false)
+        cardsLayout.addView(cardView)
+        val nameTextView = cardView.findViewById<TextView>(R.id.card_name)
+        nameTextView.text = name
+        val IDmTextView = cardView.findViewById<TextView>(R.id.card_id)
+        IDmTextView.text = IDm
+        val menuButton: ImageButton = cardView.findViewById(R.id.card_menu_button)
+        menuButton.setOnClickListener {
+            showCardMenu(it, cardView)
+        }
+        cardView.setOnTouchListener { v, _ ->
+            emuCard(v)
+            v.performClick()
+            true
+        }
+    }
+
     private fun loadCards() {
         val mutableListCard = object : TypeToken<MutableList<Card>>() {}.type
         try {
@@ -257,9 +245,9 @@ class MainActivity : AppCompatActivity() {
                 cards = jsonCards
             }
         } catch (e: IOException) {
-            Log.e("Error", "Save File Read Error")
+            Log.e(TAG, "$cardsJsonPath Read Error")
         } catch (e: JsonSyntaxException) {
-            Log.e("Error", "Save File Syntax Error")
+            Log.e(TAG, "$cardsJsonPath Syntax Error")
         }
         val mainLayout: ViewGroup = findViewById(R.id.mainList)
         mainLayout.removeAllViews()
@@ -283,7 +271,7 @@ class MainActivity : AppCompatActivity() {
         try {
             jsonFile.writeText(gson.toJson(cards).toString())
         } catch (e: IOException) {
-            Log.e("Error", "Save File Write Error")
+            Log.e(TAG, "$cardsJsonPath Write Error")
         }
     }
 
@@ -294,7 +282,5 @@ class MainActivity : AppCompatActivity() {
             saveCards()
         }
     }
-
-
 
 }
