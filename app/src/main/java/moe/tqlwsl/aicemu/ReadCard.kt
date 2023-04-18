@@ -14,7 +14,7 @@ import android.widget.Toast
 class ReadCard : Activity(), NfcAdapter.ReaderCallback{
 
     private var nfcAdapter: NfcAdapter? = null
-    private val TAG = "AICEmu"
+    private val TAG = "AICEmu-ReadCard"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +26,7 @@ class ReadCard : Activity(), NfcAdapter.ReaderCallback{
 
     override fun onResume() {
         super.onResume()
-
         nfcAdapter?.let {
-            // 设置前台调度系统
             val options = Bundle()
             options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 5000)
             it.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NFC_F, options)
@@ -44,7 +42,7 @@ class ReadCard : Activity(), NfcAdapter.ReaderCallback{
         val nfcF = NfcF.get(tag)
         nfcF?.let {
             val idm = it.tag.id
-            val idmString = toHexString(idm)
+            val idmString = idm.toHexString(false)
 
             Log.d(TAG, "IDm: $idmString")
             runOnUiThread {
@@ -56,12 +54,7 @@ class ReadCard : Activity(), NfcAdapter.ReaderCallback{
             finish()
         }
     }
-
-    private fun toHexString(data: ByteArray): String {
-        val sb = StringBuilder()
-        for (b in data) {
-            sb.append(String.format("%02X", b))
-        }
-        return sb.toString()
+    fun ByteArray.toHexString(hasSpace: Boolean = true) = this.joinToString("") {
+        (it.toInt() and 0xFF).toString(16).padStart(2, '0').uppercase() + if (hasSpace) " " else ""
     }
 }

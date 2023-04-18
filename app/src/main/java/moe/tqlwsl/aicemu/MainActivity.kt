@@ -125,23 +125,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.toolbar_menu_hide_id -> {
-                val cardsLayout: ViewGroup = findViewById(R.id.mainList)
                 showCardID = !showCardID
-                for (i in 0 until cardsLayout.childCount) {
-                    val child = cardsLayout.getChildAt(i)
-                    if (child is CardView) {
-                        val idView = child.findViewById<TextView>(R.id.card_id)
-                        val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
-                        if (showCardID) {
-                            idView.visibility = View.VISIBLE
-                            idShadowView.visibility = View.GONE
-                        }
-                        else {
-                            idView.visibility = View.GONE
-                            idShadowView.visibility = View.VISIBLE
-                        }
-                    }
-                }
+                checkCardIDShadow()
                 true
             }
             R.id.toolbar_menu_settings -> {
@@ -150,6 +135,25 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun checkCardIDShadow() {
+        val cardsLayout: ViewGroup = findViewById(R.id.mainList)
+        for (i in 0 until cardsLayout.childCount) {
+            val child = cardsLayout.getChildAt(i)
+            if (child is CardView) {
+                val idView = child.findViewById<TextView>(R.id.card_id)
+                val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
+                if (showCardID) {
+                    idView.visibility = View.VISIBLE
+                    idShadowView.visibility = View.GONE
+                }
+                else {
+                    idView.visibility = View.GONE
+                    idShadowView.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
@@ -240,6 +244,7 @@ class MainActivity : AppCompatActivity() {
         nameTextView.text = name
         val IDmTextView = cardView.findViewById<TextView>(R.id.card_id)
         IDmTextView.text = IDm
+        checkCardIDShadow()
         val menuButton: ImageButton = cardView.findViewById(R.id.card_menu_button)
         menuButton.setOnClickListener {
             showCardMenu(it, cardView)
