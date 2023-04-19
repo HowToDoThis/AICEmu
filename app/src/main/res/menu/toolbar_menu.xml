@@ -4,7 +4,7 @@
     tools:context="moe.tqlwsl.aicemu.MainActivity">
     <item
         android:id="@+id/toolbar_menu_hide_id"
-        android:title="@string/hide_id" />
+        android:title="@string/show_idm" />
     <item
         android:id="@+id/toolbar_menu_settings"
         android:title="@string/settings" />

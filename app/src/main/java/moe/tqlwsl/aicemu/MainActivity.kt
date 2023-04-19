@@ -126,6 +126,12 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.toolbar_menu_hide_id -> {
                 showCardID = !showCardID
+                item.title = if (showCardID) {
+                    "Hide IDm"
+                }
+                else {
+                    "Show IDm"
+                }
                 checkCardIDShadow()
                 true
             }

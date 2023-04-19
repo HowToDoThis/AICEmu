@@ -2,7 +2,7 @@
     <string name="app_name">AICEmu</string>
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
-    <string name="hide_id">Hide/Show IDm</string>
+    <string name="show_idm">Show IDm</string>
     <string name="settings">Settings</string>
     <string name="add_card">add card</string>
     <string name="edit_card">edit card</string>
