@@ -7,4 +7,8 @@
     <string name="show_idm">展示卡号</string>
     <string name="hide_idm">隐藏卡号</string>
     <string name="error">出错了！</string>
+    <string name="compatible_on">打开兼容模式</string>
+    <string name="compatible_off">关闭兼容模式</string>
+    <string name="nfc_not_on">NFC 没开...</string>
+    <string name="nfc_not_supported">设备不支持 NFC...</string>
 </resources>

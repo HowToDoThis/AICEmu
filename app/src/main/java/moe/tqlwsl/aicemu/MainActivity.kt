@@ -34,11 +34,12 @@ class MainActivity : AppCompatActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private var nfcFCardEmulation: NfcFCardEmulation? = null
     private var nfcPendingIntent: PendingIntent? = null
-    private val gson = Gson()
     private var cards = mutableListOf<Card>()
+    private val gson = Gson()
     private val cardsJsonPath = "card.json"
-    private var showCardID: Boolean = false
     private val TAG = "AICEmu"
+    private var showCardID: Boolean = false
+    private var compatibleID: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,13 +70,13 @@ class MainActivity : AppCompatActivity() {
         if (nfcAdapter == null) {
             Log.e(TAG, "NFC not supported")
             AlertDialog.Builder(this)
-                .setTitle(R.string.error).setMessage("NFC not supported").setCancelable(false).show()
+                .setTitle(R.string.error).setMessage(R.string.nfc_not_supported).setCancelable(false).show()
             return
         }
         if (!nfcAdapter!!.isEnabled) {
             Log.e(TAG, "NFC is off")
             AlertDialog.Builder(this)
-                .setTitle(R.string.error).setMessage("NFC is off").setCancelable(false).show()
+                .setTitle(R.string.error).setMessage(R.string.nfc_not_on).setCancelable(false).show()
             return
         }
 
@@ -126,13 +127,23 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.toolbar_menu_hide_id -> {
                 showCardID = !showCardID
-                item.title = if (showCardID) {
-                    "Hide IDm"
+                item.setTitle(if (showCardID) {
+                    R.string.hide_idm
                 }
                 else {
-                    "Show IDm"
-                }
+                    R.string.show_idm
+                })
                 checkCardIDShadow()
+                true
+            }
+            R.id.toolbar_menu_compatible -> {
+                compatibleID = !compatibleID
+                item.setTitle(if (compatibleID) {
+                    R.string.compatible_off
+                }
+                else {
+                    R.string.compatible_on
+                })
                 true
             }
             R.id.toolbar_menu_settings -> {
@@ -218,8 +229,15 @@ class MainActivity : AppCompatActivity() {
         val globalVar = this.applicationContext as GlobalVar
         val cardIDmTextView = cardView.findViewById<TextView>(R.id.card_id)
         globalVar.IDm = cardIDmTextView.text.toString()
-        //val resultIdm = setIDm(IDm)
-        val resultIdm = setIDm("02fe000000000000") // hardcoded idm for sbga
+        var resultIdm = if (compatibleID) {
+            // hardcoded idm for specific model e.g. Samsung S8
+            // idm needs to start with 02, or syscode won't be added to polling ack
+            // konmai reader read this idm while sbga reader do not check this
+            setIDm("02fe001145141919")
+        }
+        else {
+            setIDm(globalVar.IDm)
+        }
         val resultSys = setSys("88B4") // hardcoded syscode for sbga
 
         val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)

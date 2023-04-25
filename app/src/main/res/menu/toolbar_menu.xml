@@ -6,6 +6,9 @@
         android:id="@+id/toolbar_menu_hide_id"
         android:title="@string/show_idm" />
     <item
+        android:id="@+id/toolbar_menu_compatible"
+        android:title="@string/compatible_on" />
+    <item
         android:id="@+id/toolbar_menu_settings"
         android:title="@string/settings" />
 </menu>
