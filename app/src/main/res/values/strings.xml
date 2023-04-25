@@ -11,7 +11,7 @@
     <string name="dummy_card_name">AIC Card</string>
     <string name="dummy_card_id" translatable="false">012EXXXXXXXXXXXX</string>
     <string name="read_card_tip">Please touch your AIC Card!</string>
-    <string name="nfc_not_supported">NFC not supported</string>
+    <string name="nfc_not_supported">NFC not supported...</string>
     <string name="nfc_not_on">NFC is off...</string>
     <string name="desc_add_card" translatable="false">add card</string>
     <string name="desc_edit_card" translatable="false">edit card</string>

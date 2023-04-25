@@ -232,7 +232,7 @@ class MainActivity : AppCompatActivity() {
         var resultIdm = if (compatibleID) {
             // hardcoded idm for specific model e.g. Samsung S8
             // idm needs to start with 02, or syscode won't be added to polling ack
-            // konmai reader read this idm while sbga reader do not check this
+            // konmai reader reads this idm while sbga reader does not check this
             setIDm("02fe001145141919")
         }
         else {
