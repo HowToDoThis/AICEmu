@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
-        nfcPendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        nfcPendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
 
         // load hcefservice
