@@ -39,7 +39,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:contentDescription="@string/add_card"
+        android:contentDescription="@string/desc_add_card"
         android:focusable="true"
         app:backgroundTint="@color/colorSecondary"
         app:maxImageSize="35dp"

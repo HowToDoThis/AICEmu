@@ -1,0 +1,10 @@
+<resources>
+    <string name="settings">设置</string>
+    <string name="dummy_card_name">AIC Card</string>
+    <string name="read_card_tip">请与AIC卡贴贴！</string>
+    <string name="rename">改名</string>
+    <string name="delete">删除</string>
+    <string name="show_idm">展示卡号</string>
+    <string name="hide_idm">隐藏卡号</string>
+    <string name="error">出错了！</string>
+</resources>

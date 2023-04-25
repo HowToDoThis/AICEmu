@@ -69,13 +69,13 @@ class MainActivity : AppCompatActivity() {
         if (nfcAdapter == null) {
             Log.e(TAG, "NFC not supported")
             AlertDialog.Builder(this)
-                .setTitle("Error").setMessage("NFC not supported").setCancelable(false).show()
+                .setTitle(R.string.error).setMessage("NFC not supported").setCancelable(false).show()
             return
         }
         if (!nfcAdapter!!.isEnabled) {
             Log.e(TAG, "NFC is off")
             AlertDialog.Builder(this)
-                .setTitle("Error").setMessage("NFC is off").setCancelable(false).show()
+                .setTitle(R.string.error).setMessage("NFC is off").setCancelable(false).show()
             return
         }
 
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showCardMenu(v: View, cardView: View) {
         val popupMenu = PopupMenu(this, v)
-        popupMenu.inflate(R.menu.card_menu) // 加载菜单资源文件
+        popupMenu.inflate(R.menu.card_menu)
         popupMenu.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.card_menu_rename -> {
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                     editText.visibility = View.VISIBLE
                     editText.setText(textView.text)
                     editText.requestFocus()
-                    editText.setOnFocusChangeListener { v, hasFocus ->
+                    editText.setOnFocusChangeListener { _, hasFocus ->
                         if (!hasFocus) {
                             textView.text = editText.text
                             textView.visibility = View.VISIBLE
@@ -183,11 +183,6 @@ class MainActivity : AppCompatActivity() {
                             saveCards()
                         }
                     }
-//                    cardView.setOnTouchListener { v, _ ->
-//                        editText.clearFocus()
-//                        v.performClick()
-//                        true
-//                    }
                     true
                 }
                 R.id.card_menu_delete -> {
@@ -199,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        popupMenu.show() // 显示PopupMenu
+        popupMenu.show()
     }
 
 

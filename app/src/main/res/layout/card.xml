@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="@string/card_name"
+        android:text="@string/dummy_card_name"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="40sp" />
 
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="@string/card_name"
+        android:text="@string/dummy_card_name"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="40sp"
         android:visibility="gone" />
@@ -64,7 +64,7 @@
         android:layout_marginEnd="10dp"
         android:layout_gravity="end|top"
         android:background="@null"
-        android:contentDescription="@string/edit_card"
+        android:contentDescription="@string/desc_edit_card"
         android:src="@android:drawable/ic_menu_edit" />
 
 </androidx.cardview.widget.CardView>

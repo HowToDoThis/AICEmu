@@ -1,14 +1,16 @@
 <resources>
-    <string name="app_name">AICEmu</string>
+    <string name="app_name" translatable="false">AICEmu</string>
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
     <string name="show_idm">Show IDm</string>
+    <string name="hide_idm">Hide IDm</string>
     <string name="settings">Settings</string>
-    <string name="add_card">add card</string>
-    <string name="edit_card">edit card</string>
-    <string name="close_popup">close</string>
-    <string name="dummy_card_id">012EXXXXXXXXXXXX</string>
-    <string name="card_name">AIC Card</string>
-    <string name="read_card_tip">请与AIC卡贴贴！</string>
-    <string name="service_desc">EmuCard</string>
+    <string name="error">Error!</string>
+    <string name="dummy_card_name">AIC Card</string>
+    <string name="dummy_card_id" translatable="false">012EXXXXXXXXXXXX</string>
+    <string name="read_card_tip">Please touch your AIC Card!</string>
+    <string name="desc_add_card" translatable="false">add card</string>
+    <string name="desc_edit_card" translatable="false">edit card</string>
+    <string name="desc_close_popup" translatable="false">close</string>
+    <string name="desc_service" translatable="false">EmuCard</string>
 </resources>
