@@ -43,7 +43,15 @@
                 android:resource="@xml/host_nfcf_service" />
         </service>
 
-
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="30" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="Emulate every AIC Card" />
     </application>
 
 
