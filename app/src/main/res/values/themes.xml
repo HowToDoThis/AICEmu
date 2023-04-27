@@ -2,11 +2,16 @@
     <style name="Base.Theme.AICEmu" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="titleTextColor">#202020</item>
         <item name="subtitleTextColor">#505050</item>
-        <item name="colorPrimary">#e83948</item>
-        <item name="colorPrimaryDark">#98030d</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
     </style>
 
+    <style name="Theme.AICEmuActionBar" parent="Theme.AppCompat.DayNight">
+        <item name="titleTextColor">@color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+    </style>>
 
     <style name="Theme.AICEmu" parent="Base.Theme.AICEmu" />
 </resources>

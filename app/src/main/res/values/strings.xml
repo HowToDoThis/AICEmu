@@ -17,4 +17,10 @@
     <string name="desc_edit_card" translatable="false">edit card</string>
     <string name="desc_close_popup" translatable="false">close</string>
     <string name="desc_service" translatable="false">EmuCard</string>
+    <string name="title_activity_setting">Setting</string>
+    <string name="HCEF_support_false">HCE-F not supported...</string>
+    <string name="HCEF_support_true">HCE-F is supported!</string>
+    <string name="Unlocker_work_true">Unlocker is working!</string>
+    <string name="Unlocker_work_false">Unlocker not working...</string>
+    <string name="Unlocker_work_error">Unlocker Error!</string>
 </resources>

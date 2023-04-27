@@ -73,7 +73,7 @@ public class xp implements IXposedHookLoadPackage {
                 }
             });
 
-            XposedBridge.log("Hook successed!!!");
+            XposedBridge.log("Hook succeeded!!!");
         }
     }
 }

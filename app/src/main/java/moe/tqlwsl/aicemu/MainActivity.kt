@@ -148,7 +148,8 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.toolbar_menu_settings -> {
                 Toast.makeText(applicationContext, "还没做（）\nUnder constuction...", Toast.LENGTH_LONG).show()
-                // TODO
+                val settingIntent = Intent(this, SettingActivity::class.java)
+                startActivity(settingIntent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -239,6 +240,7 @@ class MainActivity : AppCompatActivity() {
             setIDm(globalVar.IDm)
         }
         val resultSys = setSys("88B4") // hardcoded syscode for sbga
+        globalVar.isHCEFUnlocked = resultSys
 
         val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)
         val cardName = cardNameTextView.text

@@ -1,7 +1,7 @@
 <resources>
     <string name="settings">设置</string>
     <string name="dummy_card_name">AIC Card</string>
-    <string name="read_card_tip">请与AIC卡贴贴！</string>
+    <string name="read_card_tip">请与 AIC 卡贴贴！</string>
     <string name="rename">改名</string>
     <string name="delete">删除</string>
     <string name="show_idm">展示卡号</string>
@@ -11,4 +11,10 @@
     <string name="compatible_off">关闭兼容模式</string>
     <string name="nfc_not_on">NFC 没开...</string>
     <string name="nfc_not_supported">设备不支持 NFC...</string>
+    <string name="title_activity_setting">设置</string>
+    <string name="HCEF_support_false">设备不支持 HCE-F...</string>
+    <string name="HCEF_support_true">设备支持 HCE-F！</string>
+    <string name="Unlocker_work_true">Unlocker 运行中！</string>
+    <string name="Unlocker_work_false">Unlocker 没在工作...</string>
+    <string name="Unlocker_work_error">Unlocker 出错了！</string>
 </resources>
