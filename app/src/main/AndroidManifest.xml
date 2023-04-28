@@ -8,6 +8,7 @@
     <application
         android:name=".GlobalVar"
         android:allowBackup="true"
+        android:extractNativeLibs="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/aic_fill"
@@ -24,7 +25,7 @@
             android:value="30" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Emulate every AIC Card" />
+            android:value="Emulate Every AIC Card" />
         <meta-data
             android:name="xposedscope"
             android:resource="@array/xposed_scope" />

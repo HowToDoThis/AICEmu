@@ -27,6 +27,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    externalNativeBuild {
+        defaultConfig.externalNativeBuild.cmake {
+            abiFilters 'arm64-v8a'
+        }
+        cmake {
+            path file('CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
     kotlinOptions {
         jvmTarget = '1.8'
     }
