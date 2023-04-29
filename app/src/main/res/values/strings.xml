@@ -23,4 +23,7 @@
     <string name="Unlocker_work_true">Unlocker is working!</string>
     <string name="Unlocker_work_false">Unlocker not working...</string>
     <string name="Unlocker_work_error">Unlocker Error!</string>
+    <string name="Pmmtool_work_true">Pmmtool is working!</string>
+    <string name="Pmmtool_work_false">Pmmtool not working...</string>
+    <string name="Pmmtool_work_hook_failed">Hook failed...</string>
 </resources>

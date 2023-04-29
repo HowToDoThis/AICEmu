@@ -13,6 +13,8 @@
 #include <inttypes.h>
 #include <unistd.h>
 
+#include <sys/system_properties.h>
+
 void *(*old_func)(u_int8_t, u_int8_t *, int) = nullptr;
 #endif //MAIN_H
 

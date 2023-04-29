@@ -38,6 +38,7 @@ void *new_func(u_int8_t a1, u_int8_t *a2, int a3) {
                 for (int j = 0; j < 8; ++j)
                     sprintf(pmm_str + j * 3, "%02x ", *(char *)(a2 + i + 2 + j));
                 __android_log_print(6, "AICEmu-pmmtool", "[1] new PMm: %s", pmm_str);
+                __system_property_set("tmp.AICEmu.pmmtool", "1");
             }
         }
 
@@ -59,6 +60,7 @@ void *new_func(u_int8_t a1, u_int8_t *a2, int a3) {
                 for (int j = 0; j < 8; ++j)
                     sprintf(pmm_str + j * 3, "%02x ", *(char *)(a2 + i + j));
                 __android_log_print(6, "AICEmu-pmmtool", "[2] new PMm: %s", pmm_str);
+                __system_property_set("tmp.AICEmu.pmmtool", "1");
             }
         }
     //}
@@ -70,6 +72,7 @@ void *new_func(u_int8_t a1, u_int8_t *a2, int a3) {
 
 jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     __android_log_print(6, "AICEmu-pmmtool", "Inside JNI_OnLoad");
+    __system_property_set("tmp.AICEmu.pmmtool", "0");
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK) {
         //void *func_addr = DobbySymbolResolver("libnfc-nci.so", "_Z23nfa_dm_check_set_confighPhb");
