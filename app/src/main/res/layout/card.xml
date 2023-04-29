@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card1"
     android:layout_width="match_parent"
     android:layout_height="250dp"
@@ -66,5 +67,31 @@
         android:background="@null"
         android:contentDescription="@string/desc_edit_card"
         android:src="@android:drawable/ic_menu_edit" />
+
+    <ImageButton
+        android:id="@+id/card_emu_mark"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@null"
+        android:contentDescription="@string/desc_edit_card"
+        android:scaleType="fitCenter"
+        android:src="@drawable/aic"
+        app:tint="?android:attr/textColorSecondary"/>
+
+    <ImageButton
+        android:id="@+id/card_emu_mark_on"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@null"
+        android:contentDescription="@string/desc_edit_card"
+        android:scaleType="fitCenter"
+        android:src="@drawable/aic"
+        android:visibility="gone" />
 
 </androidx.cardview.widget.CardView>

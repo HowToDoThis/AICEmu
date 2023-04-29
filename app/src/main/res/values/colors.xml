@@ -5,4 +5,7 @@
     <color name="colorPrimary">#e83948</color>
     <color name="colorPrimaryDark">#98030d</color>
     <color name="colorSecondary">#e86871</color>
+
+    <color name="grey_light">#505050</color>
+    <color name="grey_night">#B0B0B0</color>
 </resources>

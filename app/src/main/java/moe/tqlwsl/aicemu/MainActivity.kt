@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "AICEmu"
     private var showCardID: Boolean = false
     private var compatibleID: Boolean = false
+    private var currentCardId: Int = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +94,8 @@ class MainActivity : AppCompatActivity() {
             "moe.tqlwsl.aicemu",
             "moe.tqlwsl.aicemu.EmuCard"
         )
+
+        emuCurrentCard()
     }
 
     override fun onResume() {
@@ -101,6 +104,7 @@ class MainActivity : AppCompatActivity() {
             nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, null, null)
         }
         nfcFCardEmulation?.enableService(this, nfcFComponentName)
+        emuCurrentCard()
     }
 
     override fun onPause() {
@@ -144,6 +148,7 @@ class MainActivity : AppCompatActivity() {
                 else {
                     R.string.compatible_on
                 })
+                emuCurrentCard()
                 true
             }
             R.id.toolbar_menu_settings -> {
@@ -210,8 +215,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun setIDm(idm: String): Boolean {
         nfcFCardEmulation?.disableService(this)
         val resultIdm = nfcFCardEmulation?.setNfcid2ForService(nfcFComponentName, idm)
@@ -226,10 +229,37 @@ class MainActivity : AppCompatActivity() {
         return resultSys == true
     }
 
-    private fun emuCard(cardView: View) {
-        val globalVar = this.applicationContext as GlobalVar
+    private fun emuCurrentCard() {
+        if (currentCardId != -1) {
+            val cardsLayout: ViewGroup = findViewById(R.id.mainList)
+            val currentCard = cardsLayout.getChildAt(currentCardId)
+            emuCardview(currentCard)
+        }
+    }
+
+    private fun emuCardview(cardView: View) {
         val cardIDmTextView = cardView.findViewById<TextView>(R.id.card_id)
-        globalVar.IDm = cardIDmTextView.text.toString()
+        val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)
+        emuCard(cardIDmTextView.text.toString(), cardNameTextView.text.toString())
+
+        val mainLayout: ViewGroup = findViewById(R.id.mainList)
+        for (i in 0 until mainLayout.childCount) {
+            val child = mainLayout.getChildAt(i)
+            if (child is CardView) {
+                val emuMark: ImageButton = child.findViewById(R.id.card_emu_mark_on)
+                emuMark.visibility = View.GONE
+                if (child == cardView) {
+                    currentCardId = i
+                }
+            }
+        }
+        val emuMark: ImageButton = cardView.findViewById(R.id.card_emu_mark_on)
+        emuMark.visibility = View.VISIBLE
+    }
+
+    private fun emuCard(cardId: String, cardName: String) {
+        val globalVar = this.applicationContext as GlobalVar
+        globalVar.IDm = cardId
         var resultIdm = if (compatibleID) {
             // hardcoded idm for specific model e.g. Samsung S8
             // idm needs to start with 02, or syscode won't be added to polling ack
@@ -242,8 +272,6 @@ class MainActivity : AppCompatActivity() {
         val resultSys = setSys("88B4") // hardcoded syscode for sbga
         globalVar.isHCEFUnlocked = resultSys
 
-        val cardNameTextView = cardView.findViewById<TextView>(R.id.card_name)
-        val cardName = cardNameTextView.text
         if (!resultIdm) {
             Toast.makeText(applicationContext, "Error IDm", Toast.LENGTH_LONG).show()
         }
@@ -251,7 +279,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG).show()
         }
         if (resultIdm && resultSys) {
-            Toast.makeText(applicationContext, "正在模拟$cardName...", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "正在模拟 $cardName...", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -270,10 +298,13 @@ class MainActivity : AppCompatActivity() {
         menuButton.setOnClickListener {
             showCardMenu(it, cardView)
         }
+        val emuButton: ImageButton = cardView.findViewById(R.id.card_emu_mark)
+        emuButton.setOnClickListener {
+            emuCardview(cardView)
+        }
         cardView.setOnTouchListener { v, _ ->
             val editText = v.findViewById<EditText>(R.id.card_name_edit)
             editText.clearFocus()
-            emuCard(v)
             v.performClick()
             true
         }
