@@ -9,6 +9,9 @@
         android:id="@+id/toolbar_menu_compatible"
         android:title="@string/compatible_on" />
     <item
+        android:id="@+id/toolbar_menu_add_test_card"
+        android:title="@string/add_test_card" />
+    <item
         android:id="@+id/toolbar_menu_settings"
         android:title="@string/settings" />
 </menu>

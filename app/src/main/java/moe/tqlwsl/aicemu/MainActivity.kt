@@ -169,7 +169,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.toolbar_menu_compatible -> {
                 switchCompatible()
-
+                true
+            }
+            R.id.toolbar_menu_add_test_card -> {
+                addCard("Test Card", "012e000000114514")
                 true
             }
             R.id.toolbar_menu_settings -> {

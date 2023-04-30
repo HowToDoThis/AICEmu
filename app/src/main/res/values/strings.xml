@@ -30,4 +30,5 @@
     <string name="Emulating_compatible">Emulating %1$s...(compatible)</string>
     <string name="mode_commmon">Common</string>
     <string name="mode_compatible">Compatible</string>
+    <string name="add_test_card">Add test card</string>
 </resources>

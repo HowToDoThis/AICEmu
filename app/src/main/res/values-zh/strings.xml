@@ -24,4 +24,5 @@
     <string name="Emulating_compatible">正在模拟 %1$s...（兼容）</string>
     <string name="mode_compatible">兼容模式</string>
     <string name="mode_commmon">正常模式</string>
+    <string name="add_test_card">添加测试卡</string>
 </resources>
