@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var readCardBroadcastReceiver: ReadCardBroadcastReceiver
     private lateinit var nfcFComponentName: ComponentName
     private lateinit var jsonFile: File
+    private lateinit var prefs: SharedPreferences
     private var nfcAdapter: NfcAdapter? = null
     private var nfcFCardEmulation: NfcFCardEmulation? = null
     private var nfcPendingIntent: PendingIntent? = null
@@ -95,7 +97,20 @@ class MainActivity : AppCompatActivity() {
             "moe.tqlwsl.aicemu.EmuCard"
         )
 
-        emuCurrentCard()
+        // setting prefs
+        prefs = applicationContext.getSharedPreferences("AICEmu", MODE_PRIVATE)
+        currentCardId = prefs.getInt("currentCardId", -1)
+        compatibleID = prefs.getBoolean("compatibleID", false)
+        val compatibleButton: Button = findViewById(R.id.button_compatible)
+        compatibleButton.text = (if (compatibleID) {
+            getString(R.string.mode_compatible)
+        }
+        else {
+            getString(R.string.mode_commmon)
+        })
+        compatibleButton.setOnClickListener {
+            switchCompatible()
+        }
     }
 
     override fun onResume() {
@@ -124,7 +139,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
-        return true
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (menu != null) {
+            menu.findItem(R.id.toolbar_menu_compatible).setTitle(if (compatibleID) {
+                R.string.compatible_off
+            }
+            else {
+                R.string.compatible_on
+            })
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -141,18 +168,12 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.toolbar_menu_compatible -> {
-                compatibleID = !compatibleID
-                item.setTitle(if (compatibleID) {
-                    R.string.compatible_off
-                }
-                else {
-                    R.string.compatible_on
-                })
-                emuCurrentCard()
+                switchCompatible()
+
                 true
             }
             R.id.toolbar_menu_settings -> {
-                Toast.makeText(applicationContext, "还没做（）\nUnder constuction...", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "还没做完（）\nUnder constuction...", Toast.LENGTH_LONG).show()
                 val settingIntent = Intent(this, SettingActivity::class.java)
                 startActivity(settingIntent)
                 true
@@ -161,20 +182,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun switchCompatible() {
+        compatibleID = !compatibleID
+        val compatibleButton: Button = findViewById(R.id.button_compatible)
+        compatibleButton.text = (if (compatibleID) {
+            getString(R.string.mode_compatible)
+        }
+        else {
+            getString(R.string.mode_commmon)
+        })
+        val editor = prefs.edit()
+        editor.putBoolean("compatibleID", compatibleID)
+        editor.apply()
+        emuCurrentCard()
+    }
+
     private fun checkCardIDShadow() {
         val cardsLayout: ViewGroup = findViewById(R.id.mainList)
         for (i in 0 until cardsLayout.childCount) {
             val child = cardsLayout.getChildAt(i)
             if (child is CardView) {
                 val idView = child.findViewById<TextView>(R.id.card_id)
-                val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
+                // val idShadowView = child.findViewById<TextView>(R.id.card_id_shadow)
                 if (showCardID) {
                     idView.visibility = View.VISIBLE
-                    idShadowView.visibility = View.GONE
+                    // idShadowView.visibility = View.GONE
                 }
                 else {
                     idView.visibility = View.GONE
-                    idShadowView.visibility = View.VISIBLE
+                    // idShadowView.visibility = View.VISIBLE
                 }
             }
         }
@@ -233,7 +269,15 @@ class MainActivity : AppCompatActivity() {
         if (currentCardId != -1) {
             val cardsLayout: ViewGroup = findViewById(R.id.mainList)
             val currentCard = cardsLayout.getChildAt(currentCardId)
-            emuCardview(currentCard)
+            if (currentCard != null) {
+                emuCardview(currentCard)
+            }
+            else {
+                currentCardId = -1
+                val editor = prefs.edit()
+                editor.putInt("currentCardId", currentCardId)
+                editor.apply()
+            }
         }
     }
 
@@ -250,6 +294,9 @@ class MainActivity : AppCompatActivity() {
                 emuMark.visibility = View.GONE
                 if (child == cardView) {
                     currentCardId = i
+                    val editor = prefs.edit()
+                    editor.putInt("currentCardId", currentCardId)
+                    editor.apply()
                 }
             }
         }
@@ -279,7 +326,12 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Error Sys", Toast.LENGTH_LONG).show()
         }
         if (resultIdm && resultSys) {
-            Toast.makeText(applicationContext, "正在模拟 $cardName...", Toast.LENGTH_LONG).show()
+            if (compatibleID) {
+                Toast.makeText(applicationContext, getString(R.string.Emulating_compatible, cardName), Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(applicationContext, getString(R.string.Emulating_common, cardName), Toast.LENGTH_LONG).show()
+            }
         }
     }
 

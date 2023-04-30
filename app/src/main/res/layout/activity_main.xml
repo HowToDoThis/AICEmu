@@ -30,7 +30,17 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:title="AICEmu"
-        app:titleTextColor="#FFFFFF" />
+        app:titleTextColor="#FFFFFF">
+
+        <Button
+            android:id="@+id/button_compatible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@color/white"
+            android:text="@string/mode_commmon" />
+
+    </androidx.appcompat.widget.Toolbar>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

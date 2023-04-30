@@ -26,4 +26,8 @@
     <string name="Pmmtool_work_true">Pmmtool is working!</string>
     <string name="Pmmtool_work_false">Pmmtool not working...</string>
     <string name="Pmmtool_work_hook_failed">Hook failed...</string>
+    <string name="Emulating_common">Emulating %1$s...(common)</string>
+    <string name="Emulating_compatible">Emulating %1$s...(compatible)</string>
+    <string name="mode_commmon">Common</string>
+    <string name="mode_compatible">Compatible</string>
 </resources>

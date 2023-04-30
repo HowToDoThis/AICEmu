@@ -54,7 +54,8 @@
         android:layout_marginTop="80dp"
         android:text="@string/dummy_card_id"
         android:textColor="?android:attr/textColorSecondary"
-        android:textSize="30sp"/>
+        android:textSize="30sp"
+        android:visibility="gone" />
 
 
     <ImageButton
