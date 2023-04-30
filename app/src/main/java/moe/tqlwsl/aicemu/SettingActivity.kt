@@ -52,20 +52,20 @@ class SettingActivity : AppCompatActivity() {
                 textUnlocker.setText(R.string.Unlocker_work_error)
             }
 
-            val textPmmtool = findViewById<TextView>(R.id.pmmtool_work_text)
-            pmmtoolStatus = getProperty("tmp.AICEmu.pmmtool");
-            if (pmmtoolStatus == "") {
-                textPmmtool.setText(R.string.Pmmtool_work_false)
-                textPmmtool.setTextColor(Color.RED)
-            }
-            else if (pmmtoolStatus == "0") {
-                textPmmtool.setText(R.string.Pmmtool_work_hook_failed)
-                textPmmtool.setTextColor(Color.RED)
-            }
-            else if (pmmtoolStatus == "1") {
-                textPmmtool.setText(R.string.Pmmtool_work_true)
-                textPmmtool.setTextColor(Color.GREEN)
-            }
+//            val textPmmtool = findViewById<TextView>(R.id.pmmtool_work_text)
+//            pmmtoolStatus = getProperty("tmp.AICEmu.pmmtool");
+//            if (pmmtoolStatus == "") {
+//                textPmmtool.setText(R.string.Pmmtool_work_false)
+//                textPmmtool.setTextColor(Color.RED)
+//            }
+//            else if (pmmtoolStatus == "0") {
+//                textPmmtool.setText(R.string.Pmmtool_work_hook_failed)
+//                textPmmtool.setTextColor(Color.RED)
+//            }
+//            else if (pmmtoolStatus == "1") {
+//                textPmmtool.setText(R.string.Pmmtool_work_true)
+//                textPmmtool.setTextColor(Color.GREEN)
+//            }
 
         }
     }
