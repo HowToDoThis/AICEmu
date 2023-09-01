@@ -25,4 +25,6 @@
     <string name="mode_compatible">兼容模式</string>
     <string name="mode_commmon">正常模式</string>
     <string name="add_test_card">添加测试卡</string>
+    <string name="apdu_service_desc">模拟AIC卡</string>
+    <string name="pmmtool_switch">用 Pmmtool 修改 PMm</string>
 </resources>

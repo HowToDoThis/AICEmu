@@ -1,6 +1,9 @@
 package moe.tqlwsl.aicemu
 
+
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -8,8 +11,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.reflect.Method
+
 
 class SettingActivity : AppCompatActivity() {
     private var isHCEFSupported: Boolean = false
@@ -34,8 +39,8 @@ class SettingActivity : AppCompatActivity() {
             textHCEF.setTextColor(Color.RED)
         }
 
+        val textUnlocker = findViewById<TextView>(R.id.unlocker_work_text)
         if (isHCEFSupported) {
-            val textUnlocker = findViewById<TextView>(R.id.unlocker_work_text)
             try {
                 val globalVar = this.applicationContext as GlobalVar
                 isHCEFUnlocked = globalVar.isHCEFUnlocked
@@ -67,6 +72,15 @@ class SettingActivity : AppCompatActivity() {
 //                textPmmtool.setTextColor(Color.GREEN)
 //            }
 
+            val pmmtoolSwitch = findViewById<SwitchCompat>(R.id.pmmtool_switch)
+            pmmtoolSwitch.setOnCheckedChangeListener { _, isChecked ->
+                var prefs: SharedPreferences =
+                    applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
+                val editor = prefs.edit()
+                editor.putBoolean("loadPmmtool", isChecked)
+                editor.apply()
+                Runtime.getRuntime().exec(arrayOf("su", "-c", "kill -9 $(su -c pidof com.android.nfc)"))
+            }
         }
     }
 
