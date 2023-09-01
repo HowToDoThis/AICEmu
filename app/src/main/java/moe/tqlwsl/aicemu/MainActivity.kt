@@ -72,13 +72,13 @@ class MainActivity : AppCompatActivity() {
         if (nfcAdapter == null) {
             Log.e(TAG, "NFC not supported")
             AlertDialog.Builder(this)
-                .setTitle(R.string.error).setMessage(R.string.nfc_not_supported).setCancelable(false).show()
+                .setTitle(R.string.error).setMessage(R.string.nfc_not_supported).setCancelable(true).show()
             return
         }
         if (!nfcAdapter!!.isEnabled) {
             Log.e(TAG, "NFC is off")
             AlertDialog.Builder(this)
-                .setTitle(R.string.error).setMessage(R.string.nfc_not_on).setCancelable(false).show()
+                .setTitle(R.string.error).setMessage(R.string.nfc_not_on).setCancelable(true).show()
             return
         }
 
