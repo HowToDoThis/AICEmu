@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.*
 import android.nfc.NfcAdapter
+import android.nfc.cardemulation.CardEmulation
 import android.nfc.cardemulation.NfcFCardEmulation
 import android.os.Bundle
 import android.util.Log
@@ -12,16 +13,14 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import moe.tqlwsl.aicemu.databinding.ActivityMainBinding
 import java.io.File
 import java.io.IOException
-import moe.tqlwsl.aicemu.databinding.ActivityMainBinding
-
 
 
 internal data class Card(val name: String, val idm: String)
@@ -83,6 +82,18 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // set default payment app
+        var cardEmulation = CardEmulation.getInstance(nfcAdapter)
+        val componentName = ComponentName(applicationContext, ApduService::class.java)
+        val isDefault =
+            cardEmulation.isDefaultServiceForCategory(componentName, CardEmulation.CATEGORY_PAYMENT)
+        if (!isDefault) {
+            val intent = Intent(CardEmulation.ACTION_CHANGE_DEFAULT)
+            intent.putExtra(CardEmulation.EXTRA_CATEGORY, CardEmulation.CATEGORY_PAYMENT)
+            intent.putExtra(CardEmulation.EXTRA_SERVICE_COMPONENT, componentName)
+            startActivity(intent)
+        }
+
         // add pendingintent in order not to read tag at home
         val intent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -98,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // setting prefs
-        prefs = applicationContext.getSharedPreferences("AICEmu", MODE_PRIVATE)
+        prefs = applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
         currentCardId = prefs.getInt("currentCardId", -1)
         compatibleID = prefs.getBoolean("compatibleID", false)
         val compatibleButton: Button = findViewById(R.id.button_compatible)
@@ -176,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.toolbar_menu_settings -> {
-                Toast.makeText(applicationContext, "还没做完（）\nUnder constuction...", Toast.LENGTH_LONG).show()
+                // Toast.makeText(applicationContext, "还没做完（）\nUnder constuction...", Toast.LENGTH_LONG).show()
                 val settingIntent = Intent(this, SettingActivity::class.java)
                 startActivity(settingIntent)
                 true
