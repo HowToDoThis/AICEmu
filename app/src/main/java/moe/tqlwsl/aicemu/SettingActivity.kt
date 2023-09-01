@@ -17,6 +17,7 @@ import java.lang.reflect.Method
 
 
 class SettingActivity : AppCompatActivity() {
+    private lateinit var prefs: SharedPreferences
     private var isHCEFSupported: Boolean = false
     private var isHCEFUnlocked: Boolean = false
     private var pmmtoolStatus: String? = ""
@@ -72,10 +73,11 @@ class SettingActivity : AppCompatActivity() {
 //                textPmmtool.setTextColor(Color.GREEN)
 //            }
 
+            prefs = applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
+            val loadPmmtool = prefs.getBoolean("loadPmmtool", false)
             val pmmtoolSwitch = findViewById<SwitchCompat>(R.id.pmmtool_switch)
+            pmmtoolSwitch.isChecked = loadPmmtool
             pmmtoolSwitch.setOnCheckedChangeListener { _, isChecked ->
-                var prefs: SharedPreferences =
-                    applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
                 val editor = prefs.edit()
                 editor.putBoolean("loadPmmtool", isChecked)
                 editor.apply()

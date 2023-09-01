@@ -11,8 +11,8 @@ android {
         applicationId "moe.tqlwsl.aicemu"
         minSdk 28
         targetSdk 33
-        versionCode 5
-        versionName "1.0-Beta4"
+        versionCode 6
+        versionName "1.0-Beta4.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

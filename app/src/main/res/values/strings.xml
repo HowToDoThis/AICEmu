@@ -34,5 +34,5 @@
     <string name="apdu_service_desc">Emulate AIC Card</string>
     <string name="pmmtool_switch">Change PMm with Pmmtool</string>
     <string name="author_info" translatable="false">made by wlt233 with ❤\ntqlwsl.moe | 2709684396</string>
-    <string name="version_info" translatable="false">1.0-Beta4 (2023.09.01)</string>
+    <string name="version_info" translatable="false">1.0-Beta4.1 (2023.09.01)</string>
 </resources>
