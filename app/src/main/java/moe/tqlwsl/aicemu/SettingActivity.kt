@@ -1,6 +1,5 @@
 package moe.tqlwsl.aicemu
 
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
@@ -15,7 +14,6 @@ import androidx.appcompat.widget.SwitchCompat
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.reflect.Method
 
-
 class SettingActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
     private var isHCEFSupported: Boolean = false
@@ -27,87 +25,75 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
 
-        isHCEFSupported =
-            packageManager.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION_NFCF)
-        Log.d(TAG, "isHCEFSupported:$isHCEFSupported")
+        isHCEFSupported = packageManager.hasSystemFeature(
+            PackageManager.FEATURE_NFC_HOST_CARD_EMULATION_NFCF)
+        Log.d(TAG, "[Setting] isHCEFSupported: $isHCEFSupported")
 
         val textHCEF = findViewById<TextView>(R.id.hcef_support_text)
-        if (isHCEFSupported) {
-            textHCEF.setText(R.string.HCEF_support_true)
-            textHCEF.setTextColor(Color.GREEN)
-        } else {
-            textHCEF.setText(R.string.HCEF_support_false)
-            textHCEF.setTextColor(Color.RED)
-        }
+        textHCEF.setText((when (isHCEFUnlocked) {
+            true -> R.string.HCEF_support_true
+            else -> R.string.HCEF_support_false
+        }))
+        textHCEF.setTextColor((if (isHCEFSupported) Color.GREEN else Color.RED))
 
         val textUnlocker = findViewById<TextView>(R.id.unlocker_work_text)
         if (isHCEFSupported) {
             try {
                 val globalVar = this.applicationContext as GlobalVar
                 isHCEFUnlocked = globalVar.isHCEFUnlocked
-                Log.d(TAG, "isHCEFUnlocked:$isHCEFUnlocked")
-                if (isHCEFUnlocked) {
-                    textUnlocker.setText(R.string.Unlocker_work_true)
-                    textUnlocker.setTextColor(Color.GREEN)
-                } else {
-                    textUnlocker.setText(R.string.Unlocker_work_false)
-                    textUnlocker.setTextColor(Color.RED)
-                }
+                Log.d(TAG, "[Setting] isHCEFUnlocked: $isHCEFUnlocked")
+                textUnlocker.setText((when (isHCEFUnlocked) {
+                    true -> R.string.Unlocker_work_true
+                    else -> R.string.Unlocker_work_false
+                }))
+                textUnlocker.setTextColor((if (isHCEFUnlocked) Color.GREEN else Color.RED))
             } catch (e: Exception) {
                 e.printStackTrace()
                 textUnlocker.setText(R.string.Unlocker_work_error)
+                textUnlocker.setTextColor(Color.RED)
             }
 
-//            val textPmmtool = findViewById<TextView>(R.id.pmmtool_work_text)
-//            pmmtoolStatus = getProperty("tmp.AICEmu.pmmtool");
-//            if (pmmtoolStatus == "") {
-//                textPmmtool.setText(R.string.Pmmtool_work_false)
-//                textPmmtool.setTextColor(Color.RED)
-//            }
-//            else if (pmmtoolStatus == "0") {
-//                textPmmtool.setText(R.string.Pmmtool_work_hook_failed)
-//                textPmmtool.setTextColor(Color.RED)
-//            }
-//            else if (pmmtoolStatus == "1") {
-//                textPmmtool.setText(R.string.Pmmtool_work_true)
-//                textPmmtool.setTextColor(Color.GREEN)
-//            }
+            val textPmmtool = findViewById<TextView>(R.id.pmmtool_work_text)
+            pmmtoolStatus = getProperty("tmp.AICEmu.pmmtool")
+            textPmmtool.setText((when (pmmtoolStatus) {
+                "" -> R.string.Pmmtool_work_false
+                "0" -> R.string.Pmmtool_work_hook_failed
+                else -> R.string.Pmmtool_work_true
+            }))
+            textPmmtool.setTextColor((if (pmmtoolStatus == "1") Color.GREEN else Color.RED))
 
-            prefs = applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
-            val loadPmmtool = prefs.getBoolean("loadPmmtool", false)
             val pmmtoolSwitch = findViewById<SwitchCompat>(R.id.pmmtool_switch)
-            pmmtoolSwitch.isChecked = loadPmmtool
+            pmmtoolSwitch.isChecked = false
             pmmtoolSwitch.setOnCheckedChangeListener { _, isChecked ->
-                val editor = prefs.edit()
-                editor.putBoolean("loadPmmtool", isChecked)
-                editor.apply()
+                setProperty("tmp.AICEmu.loadPmmtool", isChecked.toString())
                 Runtime.getRuntime().exec(arrayOf("su", "-c", "kill -9 $(su -c pidof com.android.nfc)"))
             }
         }
     }
 
     companion object {
-        @SuppressLint("SoonBlockedPrivateApi")
-        private fun isValidSystemCode(systemCode: String): Boolean {
-            val clazz = Class.forName("android.nfc.cardemulation.NfcFCardEmulation")
-            return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                val method = clazz.getDeclaredMethod("isValidSystemCode", String::class.java)
-                method.invoke(null, systemCode) as Boolean
-            } else {
-                HiddenApiBypass.invoke(clazz, null, "isValidSystemCode", systemCode) as Boolean
+        @SuppressLint("PrivateApi")
+        fun getProperty(key: String?): String? {
+            return try {
+                val c = Class.forName("android.os.SystemProperties")
+                val set: Method = c.getMethod("get", String::class.java)
+                set.invoke(c, key)?.toString()
+            } catch (e: java.lang.Exception) {
+                Log.d("AICEmu", "getProperty exception")
+                e.printStackTrace()
+                ""
             }
         }
 
         @SuppressLint("PrivateApi")
-        fun getProperty(key: String?): String? {
+        fun setProperty(key: String?, value: String?) {
             try {
                 val c = Class.forName("android.os.SystemProperties")
-                val set: Method = c.getMethod("get", String::class.java)
-                return set.invoke(c, key)?.toString()
+                val set: Method = c.getMethod("set", String::class.java, String::class.java)
+                set.invoke(c, key, value)?.toString()
             } catch (e: java.lang.Exception) {
-                Log.d("AICEmu", "getProperty exception")
+                Log.d("AICEmu", "setProperty exception")
                 e.printStackTrace()
-                return ""
             }
         }
     }

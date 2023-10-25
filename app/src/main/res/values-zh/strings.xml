@@ -9,7 +9,7 @@
     <string name="error">出错了！</string>
     <string name="compatible_on">打开兼容模式</string>
     <string name="compatible_off">关闭兼容模式</string>
-    <string name="nfc_not_on">NFC 没开...</string>
+    <string name="nfc_not_on">没开 NFC...</string>
     <string name="nfc_not_supported">设备不支持 NFC...</string>
     <string name="title_activity_setting">设置</string>
     <string name="HCEF_support_false">设备不支持 HCE-F...</string>

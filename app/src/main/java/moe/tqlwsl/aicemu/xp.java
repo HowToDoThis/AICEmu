@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -29,54 +31,48 @@ public class xp implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
-        XposedBridge.log("In " + lpparam.packageName);
-        if (lpparam.packageName.equals("com.android.nfc")) {
+        XposedBridge.log("[AICEmu-PmmHook] In " + lpparam.packageName);
 
-            XposedHelpers.findAndHookMethod("android.nfc.cardemulation.NfcFCardEmulation", lpparam.classLoader,
-                    "isValidNfcid2", String.class, new XC_MethodReplacement() {
+        if (!lpparam.packageName.equals("com.android.nfc"))
+            return;
+
+        XposedHelpers.findAndHookMethod("android.nfc.cardemulation.NfcFCardEmulation", lpparam.classLoader,
+            "isValidNfcid2", String.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     return true;
                 }
             });
 
-
-            XposedHelpers.findAndHookMethod("com.android.nfc.NfcApplication",
-                lpparam.classLoader, "onCreate", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod("com.android.nfc.NfcApplication",
+            lpparam.classLoader, "onCreate", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
-                    XposedBridge.log("Inside com.android.nfc.NfcApplication#onCreate");
+                    XposedBridge.log("[AICEmu-PmmHook] Inside com.android.nfc.NfcApplication#onCreate");
                     super.beforeHookedMethod(param);
                     Application application = (Application) param.thisObject;
                     mcontext = application.getApplicationContext();
-                    XposedBridge.log("Got context");
+                    XposedBridge.log("[AICEmu-PmmHook] Got context");
                 }
             });
 
-
-            XposedHelpers.findAndHookMethod("android.nfc.cardemulation.NfcFCardEmulation",
-                lpparam.classLoader, "isValidSystemCode", String.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod("android.nfc.cardemulation.NfcFCardEmulation",
+            lpparam.classLoader, "isValidSystemCode", String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
-                    XposedBridge.log("Inside android.nfc.cardemulation.NfcFCardEmulation#isValidSystemCode");
+                    XposedBridge.log("[AICEmu-PmmHook] Inside android.nfc.cardemulation.NfcFCardEmulation#isValidSystemCode");
 
                     mclassloader = mcontext.getClassLoader();
-                    XposedBridge.log("Got classloader");
+                    XposedBridge.log("[AICEmu-PmmHook] Got classloader");
                     String path = getSoPath();
-                    XposedBridge.log("So path = " + path);
+                    XposedBridge.log("[AICEmu-PmmHook] So path = " + path);
                     try {
-                        Boolean needLoadPmmtool = false;
-                        XSharedPreferences pref = getPref();
-                        if (pref != null) {
-                            needLoadPmmtool = pref.getBoolean("loadPmmtool", false);
-                        } else {
-                            XposedBridge.log("Cannot load pref for AICEmu properly");
-                        }
-                        XposedBridge.log("loadPmmtool: " + needLoadPmmtool.toString());
+                        Boolean needLoadPmmtool = Boolean.parseBoolean(GetProp("tmp.AICEmu.loadPmmtool"));
+                        XposedBridge.log("[AICEmu-PmmHook] loadPmmtool: " + needLoadPmmtool.toString());
                         if (needLoadPmmtool && !path.equals("")) {
-                            XposedBridge.log("Start injecting libpmm.so");
-                            XposedHelpers.callMethod(Runtime.getRuntime(), "nativeLoad", path, mclassloader);
-                            XposedBridge.log("Injected libpmm.so");
+                        XposedBridge.log("[AICEmu-PmmHook] Start injecting libpmm.so");
+                        XposedHelpers.callMethod(Runtime.getRuntime(), "nativeLoad", path, mclassloader);
+                        XposedBridge.log("[AICEmu-PmmHook] Injected libpmm.so");
                         }
                     } catch (Exception e) {
                         XposedBridge.log(e);
@@ -88,23 +84,18 @@ public class xp implements IXposedHookLoadPackage {
                 }
             });
 
-            XposedBridge.log("Hook succeeded!!!");
-        }
+        XposedBridge.log("[AICEmu-PmmHook] Hook succeeded!!!");
     }
-    private static XSharedPreferences getPref() {
-        XSharedPreferences pref = new XSharedPreferences("moe.tqlwsl.aicemu", "AICEmu");
-        return pref.getFile().canRead() ? pref : null;
-    }
+
+    @NonNull
     private String getSoPath() {
         try {
-            String text = "";
             PackageManager pm = mcontext.getPackageManager();
             List<PackageInfo> pkgList = pm.getInstalledPackages(0);
             if (pkgList.size() > 0) {
                 for (PackageInfo pi: pkgList) {
                     if (pi.applicationInfo.publicSourceDir.contains("moe.tqlwsl.aicemu")) {
-                        text = pi.applicationInfo.publicSourceDir.replace("base.apk", "lib/arm64/libpmm.so");
-                        return text;
+                        return pi.applicationInfo.publicSourceDir.replace("base.apk", "lib/arm64/libpmm.so");
                     }
                 }
             }
@@ -113,5 +104,25 @@ public class xp implements IXposedHookLoadPackage {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @NonNull
+    private static String GetProp(String key) {
+        try {
+            Class c = Class.forName("android.os.SystemProperties");
+            return c.getMethod("get", String.class).invoke(c, key).toString();
+        } catch (Exception e) {
+            XposedBridge.log("[AICEmu-PmmHook] " + e);
+            return "";
+        }
+    }
+
+    private static void SetProp(String key, String value) {
+        try {
+            Class c = Class.forName("android.os.SystemProperties");
+            c.getMethod("set", String.class, String.class).invoke(c, key, value);
+        } catch (Exception e) {
+            XposedBridge.log("[AICEmu-PmmHook] " + e);
+        }
     }
 }

@@ -33,34 +33,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:textSize="32sp"
         android:text="@string/Pmmtool_work_false"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/unlocker_work_text"
-        android:visibility="gone"/>
+        app:layout_constraintTop_toBottomOf="@+id/unlocker_work_text" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/pmmtool_switch"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="100dp"
+        android:text="@string/pmmtool_switch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pmmtool_work_text"
-        android:text="@string/pmmtool_switch"/>
+        app:layout_constraintTop_toBottomOf="@+id/pmmtool_work_text" />
 
     <TextView
         android:id="@+id/version_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:textSize="20sp"
         android:text="@string/version_info"
         android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/author_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/author_text"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/author_text"

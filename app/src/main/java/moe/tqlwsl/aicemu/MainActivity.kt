@@ -22,7 +22,6 @@ import moe.tqlwsl.aicemu.databinding.ActivityMainBinding
 import java.io.File
 import java.io.IOException
 
-
 internal data class Card(val name: String, val idm: String)
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private var showCardID: Boolean = false
     private var compatibleID: Boolean = false
     private var currentCardId: Int = -1
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -109,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // setting prefs
-        prefs = applicationContext.getSharedPreferences("AICEmu", Context.MODE_WORLD_READABLE)
+        prefs = applicationContext.getSharedPreferences("AICEmu", Context.MODE_PRIVATE)
         currentCardId = prefs.getInt("currentCardId", -1)
         compatibleID = prefs.getBoolean("compatibleID", false)
         val compatibleButton: Button = findViewById(R.id.button_compatible)
@@ -154,14 +152,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if (menu != null) {
-            menu.findItem(R.id.toolbar_menu_compatible).setTitle(if (compatibleID) {
-                R.string.compatible_off
-            }
-            else {
-                R.string.compatible_on
-            })
-        }
+        menu?.findItem(R.id.toolbar_menu_compatible)?.setTitle(if (compatibleID) {
+            R.string.compatible_off
+        } else {
+            R.string.compatible_on
+        })
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -321,6 +316,7 @@ class MainActivity : AppCompatActivity() {
     private fun emuCard(cardId: String, cardName: String) {
         val globalVar = this.applicationContext as GlobalVar
         globalVar.IDm = cardId
+
         var resultIdm = if (compatibleID) {
             // hardcoded idm for specific model e.g. Samsung S8
             // idm needs to start with 02, or syscode won't be added to polling ack
@@ -330,6 +326,7 @@ class MainActivity : AppCompatActivity() {
         else {
             setIDm(globalVar.IDm)
         }
+
         val resultSys = setSys("88B4") // hardcoded syscode for sbga
         globalVar.isHCEFUnlocked = resultSys
 
@@ -348,7 +345,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun addCard(name: String, IDm: String?) {
         val cardsLayout: ViewGroup = findViewById(R.id.mainList)
@@ -395,7 +391,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun saveCards() {
         cards.clear()
         val mainLayout: ViewGroup = findViewById(R.id.mainList)
@@ -421,5 +416,4 @@ class MainActivity : AppCompatActivity() {
             saveCards()
         }
     }
-
 }

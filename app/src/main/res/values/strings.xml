@@ -4,35 +4,35 @@
     <string name="delete">Delete</string>
     <string name="show_idm">Show IDm</string>
     <string name="hide_idm">Hide IDm</string>
-    <string name="compatible_on">Compatible mode on</string>
-    <string name="compatible_off">Compatible mode off</string>
+    <string name="compatible_on">Compatible Mode on</string>
+    <string name="compatible_off">Compatible Mode off</string>
     <string name="settings">Settings</string>
     <string name="error">Error!</string>
     <string name="dummy_card_name">AIC Card</string>
     <string name="dummy_card_id" translatable="false">012EXXXXXXXXXXXX</string>
-    <string name="read_card_tip">Please touch your AIC Card!</string>
-    <string name="nfc_not_supported">NFC not supported...</string>
-    <string name="nfc_not_on">NFC is off...</string>
+    <string name="read_card_tip">Please Touch Your AIC Card!</string>
+    <string name="nfc_not_supported">NFC Not Supported...</string>
+    <string name="nfc_not_on">NFC Currently Off...</string>
     <string name="desc_add_card" translatable="false">add card</string>
     <string name="desc_edit_card" translatable="false">edit card</string>
     <string name="desc_close_popup" translatable="false">close</string>
     <string name="desc_service" translatable="false">EmuCard</string>
     <string name="title_activity_setting">Setting</string>
-    <string name="HCEF_support_false">HCE-F not supported...</string>
-    <string name="HCEF_support_true">HCE-F is supported!</string>
-    <string name="Unlocker_work_true">Unlocker is working!</string>
-    <string name="Unlocker_work_false">Unlocker not working...</string>
+    <string name="HCEF_support_false">HCE-F Not Supported...</string>
+    <string name="HCEF_support_true">HCE-F Supported!</string>
+    <string name="Unlocker_work_true">Unlocker Working!</string>
+    <string name="Unlocker_work_false">Unlocker Not Working...</string>
     <string name="Unlocker_work_error">Unlocker Error!</string>
-    <string name="Pmmtool_work_true">Pmmtool is working!</string>
-    <string name="Pmmtool_work_false">Pmmtool not working...</string>
-    <string name="Pmmtool_work_hook_failed">Hook failed...</string>
+    <string name="Pmmtool_work_true">Pmmtool Working!</string>
+    <string name="Pmmtool_work_false">Pmmtool Not Working...</string>
+    <string name="Pmmtool_work_hook_failed">Hook Failed...</string>
     <string name="Emulating_common">Emulating %1$s...(common)</string>
     <string name="Emulating_compatible">Emulating %1$s...(compatible)</string>
     <string name="mode_commmon">Common</string>
     <string name="mode_compatible">Compatible</string>
-    <string name="add_test_card">Add test card</string>
+    <string name="add_test_card">Add Test Card</string>
     <string name="apdu_service_desc">Emulate AIC Card</string>
     <string name="pmmtool_switch">Change PMm with Pmmtool</string>
-    <string name="author_info" translatable="false">made by wlt233 with ❤\ntqlwsl.moe | 2709684396</string>
-    <string name="version_info" translatable="false">1.0-Beta4.1 (2023.09.01)</string>
+    <string name="author_info" translatable="false">Modified By Xein\nOriginally Made By wlt233 With ❤\ntqlwsl.moe | 2709684396</string>
+    <string name="version_info" translatable="false">1.0.0\nBased on 1.0-Beta4.1 (2023.09.01)</string>
 </resources>
