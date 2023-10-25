@@ -20,8 +20,6 @@ char target_pmm[8] = {0x00, 0xf1, 0x00, 0x00, 0x00, 0x01, 0x43, 0x00};
 
 void *new_func(u_int8_t tlv_list_len, u_int8_t *p_tlv_list, int app_init) {
 
-    __android_log_print(6, "AICEmu-pmmtool", "hook _Z23nfa_dm_check_set_confighPhb arg0->%x arg1->%x", tlv_list_len, p_tlv_list);
-
     // lovely android 10 arm64 :3
     // read more: https://source.android.com/docs/core/tests/debug/native-crash?hl=zh-cn#xom
     _make_rwx(p_tlv_list, _page_size);
@@ -41,16 +39,18 @@ void *new_func(u_int8_t tlv_list_len, u_int8_t *p_tlv_list, int app_init) {
         //    sprintf(buff + i * 3, "%02x ", *(char *)(p_tlv_list + 0x10 + i));
         //__android_log_print(6, "AICEmu-pmmtool", "[%x]: %s", p_tlv_list + 0x10, buff);
 
-        // 51 = NFC_PMID_LF_T3T_PMM
-        // 08 = NCI_PARAM_LEN_LF_T3T_PMM
-        // look for 51 08 (set pmm command) for type 0x1d
         for (int i = 0x0; i < 0x20; ++i) {
             // i know kinda stupid, but easier to read :(
             auto type = *(p_tlv_list + i);
             auto len = *(p_tlv_list + i + 1);
             auto p_value = p_tlv_list + i + 2;
 
+            // 51 = NFC_PMID_LF_T3T_PMM
+            // 08 = NCI_PARAM_LEN_LF_T3T_PMM
+            // look for 51 08 (set pmm command) for type 0x1d
             if (type == 0x51 && len == 0x08) {
+                __android_log_print(6, "AICEmu-pmmtool", "hook _Z23nfa_dm_check_set_confighPhb arg0->%x arg1->%x", tlv_list_len, p_tlv_list);
+
                 __android_log_print(6, "AICEmu-pmmtool", "Set Pmm Found... hooking", pmm_str);
 
                 found = true;
@@ -67,10 +67,8 @@ void *new_func(u_int8_t tlv_list_len, u_int8_t *p_tlv_list, int app_init) {
                     sprintf(pmm_str + j * 3, "%02x ", *(char *)(p_value + j));
                 __android_log_print(6, "AICEmu-pmmtool", "[1] new PMm: %s", pmm_str);
             }
-        }
 
-        // look for FF FF FF FF FF FF FF FF (pmm itself)
-        for (int i = 0x0; i < 0x20; ++i) {
+            // look for FF FF FF FF FF FF FF FF (pmm itself)
             if (*(char *)(p_tlv_list + i) == 0xff && *(char *)(p_tlv_list + i + 1) == 0xff
                 && *(char *)(p_tlv_list + i + 2) == 0xff && *(char *)(p_tlv_list + i + 3) == 0xff
                 && *(char *)(p_tlv_list + i + 4) == 0xff && *(char *)(p_tlv_list + i + 5) == 0xff
@@ -92,11 +90,28 @@ void *new_func(u_int8_t tlv_list_len, u_int8_t *p_tlv_list, int app_init) {
             }
         }
 
-    __android_log_print(6, "AICEmu-pmmtool", "load old func");
     void *result = old_func(tlv_list_len, p_tlv_list, app_init);
-    __android_log_print(6, "AICEmu-pmmtool", "hook result -> %x", result);
 
     if (found) {
+        __android_log_print(6, "AICEmu-pmmtool", "hook result -> %x", result);
+
+        // double check?
+        for (int i = 0x0; i < 0x20; ++i) {
+            // i know kinda stupid, but easier to read :(
+            auto type = *(p_tlv_list + i);
+            auto len = *(p_tlv_list + i + 1);
+            auto p_value = p_tlv_list + i + 2;
+
+            // 51 = NFC_PMID_LF_T3T_PMM
+            // 08 = NCI_PARAM_LEN_LF_T3T_PMM
+            // look for 51 08 (set pmm command) for type 0x1d
+            if (type == 0x51 && len == 0x08) {
+                for (int j = 0; j < 8; ++j)
+                    sprintf(pmm_str + j * 3, "%02x ", *(char *)(p_value + j));
+                __android_log_print(6, "AICEmu-pmmtool", "[1] returned Pmm: %s", pmm_str);
+            }
+        }
+
         if (result != 0)
             __system_property_set("tmp.AICEmu.pmmtool", "0");
         else

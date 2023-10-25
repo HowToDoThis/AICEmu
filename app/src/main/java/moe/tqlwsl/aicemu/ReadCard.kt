@@ -42,11 +42,12 @@ class ReadCard : Activity(), NfcAdapter.ReaderCallback{
         val nfcF = NfcF.get(tag)
         nfcF?.let {
             val idm = it.tag.id
+            val sysCode = it.systemCode.toHexString(false)
             val idmString = idm.toHexString(false)
 
-            Log.d(TAG, "IDm: $idmString")
+            Log.d(TAG, "[TAG FOUND] IDm: $idmString, SysCode: $sysCode")
             runOnUiThread {
-                Toast.makeText(this, "IDm: $idmString", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "IDm: $idmString, SysCode: $sysCode", Toast.LENGTH_LONG).show()
             }
             val intent = Intent("moe.tqlwsl.aicemu.READ_CARD")
             intent.putExtra("Card_IDm", idmString)

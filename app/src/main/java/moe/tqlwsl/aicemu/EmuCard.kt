@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 
-
 class EmuCard : HostNfcFService() {
     private lateinit var card: FelicaCard
     private var TAG: String = "AICEmu-EmuCard"
@@ -16,7 +15,6 @@ class EmuCard : HostNfcFService() {
         (it.toInt() and 0xFF).toString(16).padStart(2, '0').uppercase() + if (hasSpace) " " else ""
     }
 
-
     // resp utils
     fun packResponse(respType: Byte, nfcid2: ByteArray, payload: ByteArray): ByteArray {
         var resp = ByteArray(1) + respType + nfcid2 + payload
@@ -26,9 +24,8 @@ class EmuCard : HostNfcFService() {
 
     override fun processNfcFPacket(commandPacket: ByteArray, extras: Bundle?): ByteArray? {
         val commandHexStr = commandPacket.toHexString()
-        Log.d(TAG, "processNfcFPacket NFCF")
-        Log.d(TAG, "received $commandHexStr")
-        //Toast.makeText(this, "received $commandHexStr", Toast.LENGTH_LONG).show()
+        Log.d(TAG, "[RECV] processNfcFPacket received $commandHexStr")
+        Toast.makeText(this, "[RECV] received $commandHexStr", Toast.LENGTH_LONG).show()
 
         if (commandPacket.size < 1 + 1 + 8 || (commandPacket.size.toByte() != commandPacket[0])) {
             Log.e(TAG, "processNfcFPacket: packet size error")
@@ -54,17 +51,17 @@ class EmuCard : HostNfcFService() {
             }
             val resp = packResponse(0x07.toByte(), nfcid2, payload)
             val respHexStr = resp.toHexString()
-            Log.d(TAG, "send $respHexStr")
-            Toast.makeText(this, "Scanned", Toast.LENGTH_LONG).show()
-            //Toast.makeText(this, "received $commandHexStr\n\nsend $respHexStr", Toast.LENGTH_LONG).show()
+            Log.d(TAG, "[READ] received [$commandHexStr] | send [$respHexStr]")
+            //Toast.makeText(this, "Scanned", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "[READ] received [$commandHexStr]\nsend [$respHexStr]", Toast.LENGTH_LONG).show()
             return resp
         }
         else if (commandPacket[1] == 0x08.toByte()) { // WRITE BLK // not implemented
             val payload = ByteArray(2)
             val resp = packResponse(0x09.toByte(), nfcid2, payload)
             val respHexStr = resp.toHexString()
-            Log.d(TAG, "send $respHexStr")
-            //Toast.makeText(this, "received $commandHexStr\n\nsend $respHexStr", Toast.LENGTH_LONG).show()
+            Log.d(TAG, "[WRITE] received [$commandHexStr] | send [$respHexStr]")
+            Toast.makeText(this, "[WRITE] received [$commandHexStr]\nsend [$respHexStr]", Toast.LENGTH_LONG).show()
             return resp
         }
 
@@ -74,23 +71,21 @@ class EmuCard : HostNfcFService() {
         // return null
     }
 
-
-
     override fun onCreate() {
         Log.d(TAG, "onCreate NFCF")
         super.onCreate()
         val globalVar = this.applicationContext as GlobalVar
         card = FelicaCard(this, globalVar.IDm)
-        // Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy NFCF")
         super.onDestroy()
-        // Toast.makeText(this, "onDestroy", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "onDestroy", Toast.LENGTH_LONG).show()
     }
     override fun onDeactivated(reason: Int) {
         Log.d(TAG, "onDeactivated NFCF")
-        // Toast.makeText(this, "onDeactivated", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "onDeactivated", Toast.LENGTH_LONG).show()
     }
 }

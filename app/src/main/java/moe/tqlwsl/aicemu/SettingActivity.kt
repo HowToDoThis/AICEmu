@@ -1,17 +1,14 @@
 package moe.tqlwsl.aicemu
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.lang.reflect.Method
 
 class SettingActivity : AppCompatActivity() {
@@ -30,7 +27,7 @@ class SettingActivity : AppCompatActivity() {
         Log.d(TAG, "[Setting] isHCEFSupported: $isHCEFSupported")
 
         val textHCEF = findViewById<TextView>(R.id.hcef_support_text)
-        textHCEF.setText((when (isHCEFUnlocked) {
+        textHCEF.setText((when (isHCEFSupported) {
             true -> R.string.HCEF_support_true
             else -> R.string.HCEF_support_false
         }))
@@ -55,17 +52,19 @@ class SettingActivity : AppCompatActivity() {
 
             val textPmmtool = findViewById<TextView>(R.id.pmmtool_work_text)
             pmmtoolStatus = getProperty("tmp.AICEmu.pmmtool")
+            Log.d(TAG, "[Setting] loadPmmtool: $pmmtoolStatus")
             textPmmtool.setText((when (pmmtoolStatus) {
-                "" -> R.string.Pmmtool_work_false
-                "0" -> R.string.Pmmtool_work_hook_failed
+                "" -> R.string.Pmmtool_work_hook_failed
+                "0" -> R.string.Pmmtool_work_false
                 else -> R.string.Pmmtool_work_true
             }))
             textPmmtool.setTextColor((if (pmmtoolStatus == "1") Color.GREEN else Color.RED))
 
             val pmmtoolSwitch = findViewById<SwitchCompat>(R.id.pmmtool_switch)
-            pmmtoolSwitch.isChecked = false
+            pmmtoolSwitch.isChecked = java.lang.Boolean.parseBoolean(getProperty("tmp.AICEmu.loadPmmtool"))
             pmmtoolSwitch.setOnCheckedChangeListener { _, isChecked ->
                 setProperty("tmp.AICEmu.loadPmmtool", isChecked.toString())
+                setProperty("tmp.AICEmu.pmmtool", "")
                 Runtime.getRuntime().exec(arrayOf("su", "-c", "kill -9 $(su -c pidof com.android.nfc)"))
             }
         }
